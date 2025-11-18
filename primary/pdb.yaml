@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: llm-api-pdb
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: llm-api
