@@ -1,0 +1,22 @@
+name: Multi-Region LLM CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build Docker Image
+      run: docker build -t your-dockerhub-user/multi-region-llm:latest .
+
+    - name: Push Image
+      run: docker push your-dockerhub-user/multi-region-llm:latest
+
+    - name: Sync ArgoCD
+      run: |
+        argocd app sync llm-inference-primary
+        argocd app sync llm-inference-secondary
