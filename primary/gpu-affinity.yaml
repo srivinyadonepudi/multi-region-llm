@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-api-gpu
+spec:
+  replicas: 2
+  template:
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      containers:
+      - name: llm-gpu
+        image: your-dockerhub-user/llm-gpu:latest
+        resources:
+          limits:
+            nvidia.com/gpu: 1
