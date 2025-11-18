@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: llm-api
+  namespace: llm-inference
+spec:
+  replicas: 4
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause: { duration: 60 }
+      - setWeight: 50
+      - pause: { duration: 120 }
+  selector:
+    matchLabels:
+      app: llm-api
+  template:
+    metadata:
+      labels:
+        app: llm-api
+    spec:
+      containers:
+      - name: llm-api
+        image: your-dockerhub-user/multi-region-llm:latest
+        resources:
+          requests:
+            cpu: "1"
+            memory: "3Gi"
+          limits:
+            cpu: "2"
+            memory: "6Gi"
+        ports:
+        - containerPort: 80
+        env:
+        - name: REGION
+          value: "EU-CENTRAL"
+        - name: VECTOR_DB_SYNC
+          value: "true"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
