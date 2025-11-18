@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: script-generator-
+spec:
+  entrypoint: generate-script
+  templates:
+  - name: generate-script
+    container:
+      image: your-dockerhub-user/multi-region-llm:latest
+      command: ["python"]
+      args: ["-c", "from model_loader import load_model, generate_text; m=load_model(); print(generate_text(m,'create video script',150))"]
